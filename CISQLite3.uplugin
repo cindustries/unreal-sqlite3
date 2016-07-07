@@ -1,0 +1,24 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "SQLite3 Plugin",
+  "Description": "SQLite3 plugin with Blueprint nodes and C++ functions (based on github.com/Jusas/SQLite3UE4)",
+  "Category": "Database",
+  "CreatedBy": "conflict.industries",
+  "CreatedByURL": "http://conflict.industries/",
+  "DocsURL": "http://conflict.industries/sqlite3/",
+  "MarketplaceURL": "",
+  "SupportURL": "http://conflict.industries/support",
+  "EnabledByDefault": true,
+  "CanContainContent": false,
+  "IsBetaVersion": true,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "CISQLite3",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ]
+}
