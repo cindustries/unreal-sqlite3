@@ -10,7 +10,7 @@
   "DocsURL": "http://conflict.industries/sqlite3/",
   "MarketplaceURL": "",
   "SupportURL": "http://conflict.industries/support",
-  "EnabledByDefault": true,
+  "EnabledByDefault": false,
   "CanContainContent": false,
   "IsBetaVersion": true,
   "Installed": false,
