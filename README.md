@@ -1,8 +1,8 @@
-# Most simple SQLite3 integration for Unreal Engine 4
+# Simple SQLite3 Source integration for Unreal Engine 4
 
-Based on https://github.com/Jusas/SQLite3UE4/ but with compiling SQLite3 as part of the module code, this opens up compiling it (hopefully) on all platforms without any further tuning.
+Based on [SQLite3UE4 Plugin by Jussi Saarivirta](https://github.com/Jusas/SQLite3UE4/) but with compiling SQLite3 as part of the module code, this opens up compiling it (hopefully) on all platforms without any further tuning.
 
-Please report any problems to the issues on this GitHub
+Please report any problems to the [issues tracker](https://github.com/cindustries/unreal-sqlite3/issues) on this GitHub
 
 # Usage
 
@@ -14,8 +14,9 @@ Copy or checkout this plugin into the folder Plugins/CISQLite3 on your project a
 
 The MIT License (MIT)
 
+Copyright (c) 2015 Jussi Saarivirta (SQLite3UE4)
+
 Copyright (c) 2016 conflict.industries
-Copyright (c) 2015 Jussi Saarivirta
 
 ## SQLite3
 
