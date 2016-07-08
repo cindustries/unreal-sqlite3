@@ -1,4 +1,3 @@
-// Copyright (c) 2015 Jussi Saarivirta 2016 conflict.industries MIT License (MIT)
 
 #pragma once
 #include "SQLiteBlueprintNodes.generated.h"

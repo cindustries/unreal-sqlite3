@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include "EngineMinimal.h"
 #include "CISQLite3.h"
-
 #include "CoreUObject.h"
-#include "sqlite3.h"
 #include "SQLiteDatabase.h"
 #include "SQLiteBlueprintFunctionLibrary.h"
 #include "SQLiteBlueprintNodes.h"
