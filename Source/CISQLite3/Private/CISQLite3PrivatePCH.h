@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Jussi Saarivirta 2016 conflict.industries MIT License (MIT)
+// Copyright (c) 2016 conflict.industries MIT License (MIT)
 
 #pragma once
 
