@@ -343,15 +343,11 @@ FString USQLiteDatabase::ConstructQuery(TArray<FString> Tables, TArray<FString> 
 void USQLiteDatabase::PrepareStatement(const FString* DatabaseName, const FString* Query, sqlite3** Db, int32** SqlReturnCode,
 	sqlite3_stmt** PreparedStatement) {
 
-	ANSICHAR* dbNameAsUtf8 = TCHAR_TO_UTF8(*Databases[**DatabaseName]);
-
-	int32 i = sqlite3_open(dbNameAsUtf8, Db);
+	int32 i = sqlite3_open(TCHAR_TO_UTF8(*Databases[**DatabaseName]), Db);
 
 	**SqlReturnCode = i;
 
-	ANSICHAR* queryAsUtf8 = TCHAR_TO_UTF8(**Query);
-
-	**SqlReturnCode = sqlite3_prepare_v2(*Db, queryAsUtf8, -1, PreparedStatement, NULL);
+	**SqlReturnCode = sqlite3_prepare_v2(*Db, TCHAR_TO_UTF8(**Query), -1, PreparedStatement, NULL);
 }
 
 //--------------------------------------------------------------------------------------------------------------
