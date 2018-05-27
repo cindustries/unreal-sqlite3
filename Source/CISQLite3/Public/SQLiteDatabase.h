@@ -127,11 +127,11 @@ public:
 
 	/** Add a database to the list of databases. It will be checked that it's valid (will try to open it) */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
-		static bool RegisterDatabase(FString Name, FString Filename, bool RelativeToGameContentDirectory);
+		static bool RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToGameContentDirectory);
 
 	/** Checks if the database is registered, ie. that it can be found in Databases. */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
-		static bool IsDatabaseRegistered(FString DatabaseName);
+		static bool IsDatabaseRegistered(const FString& DatabaseName);
 
 	/** Get data from the database using a select statement straight into an UObject, ie. populates its properties. */
 	UFUNCTION(BlueprintCallable, Category = "SQLite", meta = (DisplayName = "Get Data Into Object (manual query)"))
@@ -152,61 +152,61 @@ public:
 
 	/** Create table in the database. */
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Create Table"))
-		static FSQLiteTable CreateTable(const FString DatabaseName, const FString TableName,
+		static FSQLiteTable CreateTable(const FString& DatabaseName, const FString& TableName,
 		const TArray<FSQLiteTableField> Fields, const FSQLitePrimaryKey PK);
 
 	/** Create indexes for table */
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Create Indexes"))
-		static bool CreateIndexes(const FString DatabaseName, const FString TableName, const TArray<FSQLiteIndex> Indexes);
+		static bool CreateIndexes(const FString& DatabaseName, const FString& TableName, const TArray<FSQLiteIndex> Indexes);
 
 	/** Create index for table */
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Create Index"))
-		static bool CreateIndex(const FString DatabaseName, const FString TableName, const FSQLiteIndex Index);
+		static bool CreateIndex(const FString& DatabaseName, const FString& TableName, const FSQLiteIndex Index);
 
 	/** Drop index*/
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Drop Index"))
-		static bool DropIndex(const FString DatabaseName, const FString IndexName);
+		static bool DropIndex(const FString& DatabaseName, const FString& IndexName);
 
 	/** Drop Table*/
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Drop Table"))
-		static bool DropTable(const FString DatabaseName, const FString TableName);
+		static bool DropTable(const FString& DatabaseName, const FString& TableName);
 
 	/** Truncate Table*/
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Truncate Table"))
-		static bool TruncateTable(const FString DatabaseName, const FString TableName);
+		static bool TruncateTable(const FString& DatabaseName, const FString& TableName);
 
 	/** Is table exists?*/
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Is table exists?"))
-		static bool IsTableExists(const FString DatabaseName, const FString TableName);
+		static bool IsTableExists(const FString& DatabaseName, const FString& TableName);
 
 	/** Insert rows into table */
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Insert Rows Into Table"))
-		static void InsertRowsIntoTable(const FString DatabaseName, const FString TableName, TArray<FSQLiteTableRowSimulator> rowsOfFields);
+		static void InsertRowsIntoTable(const FString& DatabaseName, const FString& TableName, TArray<FSQLiteTableRowSimulator> rowsOfFields);
 
 	/** Compact database*/
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Compact database"))
-		static bool Vacuum(const FString DatabaseName);
+		static bool Vacuum(const FString& DatabaseName);
 
 	/** Execute SQL (can be used for insert statement)*/
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Execute SQL"))
-		static bool ExecSql(const FString DatabaseName, const FString Query);
+		static bool ExecSql(const FString& DatabaseName, const FString& Query);
 
 private:
 	/** Checks database validity (if the file exists and/or if it can be opened). */
-	static bool IsValidDatabase(FString DatabaseFilename, bool TestByOpening);
+	static bool IsValidDatabase(const FString& DatabaseFilename, bool TestByOpening);
 	/** Tries to open a database. */
-	static bool CanOpenDatabase(FString DatabaseFilename);
+	static bool CanOpenDatabase(const FString& DatabaseFilename);
 	/** Collects all properties from an UObject and maps them by the property name. */
 	static TMap<FString, UProperty*> CollectProperties(UObject* SourceObject);
 	/** Constructs an SQL query from the blueprint fed data. */
 	static FString ConstructQuery(TArray<FString> Tables, TArray<FString> Fields, FSQLiteQueryFinalizedQuery QueryObject, int32 MaxResults = -1, int32 ResultOffset = 0);
 	/** Runs a query and returns fetched rows. */
-	static SQLiteQueryResult RunQueryAndGetResults(FString DatabaseName, FString Query);
+	static SQLiteQueryResult RunQueryAndGetResults(const FString& DatabaseName, const FString& Query);
 	/** Assigns a result row's fields' values to an UObject, ie. assigns them to the properties that have the same name. */
 	static void AssignResultsToObjectProperties(const SQLiteResultValue& ResultValue, UObject* ObjectToPopulate);
-	static void PrepareStatement(const FString* DatabaseName, const FString* Query, sqlite3** Db, int32** SqlReturnCode,
+	static void PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
 		sqlite3_stmt** PreparedStatement);
-	
+
 
 private:
 	/** A list of the databases for convenience, easier to refer to them by name rather than a long filename. */

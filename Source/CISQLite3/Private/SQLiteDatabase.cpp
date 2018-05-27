@@ -14,7 +14,7 @@ USQLiteDatabase::USQLiteDatabase(const FObjectInitializer& ObjectInitializer)
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::RegisterDatabase(FString Name, FString Filename, bool RelativeToGameContentDirectory)
+bool USQLiteDatabase::RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToGameContentDirectory)
 {
 	FString actualFilename = Filename;
 
@@ -22,7 +22,7 @@ bool USQLiteDatabase::RegisterDatabase(FString Name, FString Filename, bool Rela
 	{
 		actualFilename = FPaths::GameContentDir() + Filename;
 	}
-		
+
 	if (!IsValidDatabase(actualFilename, true))
 	{
 		FString message = "Unable to add database '" + actualFilename + "', it is not valid (problems opening it)!";
@@ -186,14 +186,14 @@ TMap<FString, UProperty*> USQLiteDatabase::CollectProperties(UObject* SourceObje
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::IsDatabaseRegistered(FString DatabaseName)
+bool USQLiteDatabase::IsDatabaseRegistered(const FString& DatabaseName)
 {
 	return Databases.Contains(DatabaseName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::CanOpenDatabase(FString DatabaseFilename)
+bool USQLiteDatabase::CanOpenDatabase(const FString& DatabaseFilename)
 {
 	sqlite3* db;
 	if (sqlite3_open(TCHAR_TO_ANSI(*DatabaseFilename), &db) == SQLITE_OK)
@@ -206,7 +206,7 @@ bool USQLiteDatabase::CanOpenDatabase(FString DatabaseFilename)
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::IsValidDatabase(FString DatabaseFilename, bool TestByOpening)
+bool USQLiteDatabase::IsValidDatabase(const FString& DatabaseFilename, bool TestByOpening)
 {
 	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*DatabaseFilename))
 	{
@@ -340,19 +340,19 @@ FString USQLiteDatabase::ConstructQuery(TArray<FString> Tables, TArray<FString> 
 
 //--------------------------------------------------------------------------------------------------------------
 
-void USQLiteDatabase::PrepareStatement(const FString* DatabaseName, const FString* Query, sqlite3** Db, int32** SqlReturnCode,
+void USQLiteDatabase::PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
 	sqlite3_stmt** PreparedStatement) {
 
-	int32 i = sqlite3_open(TCHAR_TO_UTF8(*Databases[**DatabaseName]), Db);
+	int32 i = sqlite3_open(TCHAR_TO_UTF8(*Databases[*DatabaseName]), Db);
 
 	**SqlReturnCode = i;
 
-	**SqlReturnCode = sqlite3_prepare_v2(*Db, TCHAR_TO_UTF8(**Query), -1, PreparedStatement, NULL);
+	**SqlReturnCode = sqlite3_prepare_v2(*Db, TCHAR_TO_UTF8(*Query), -1, PreparedStatement, NULL);
 }
 
 //--------------------------------------------------------------------------------------------------------------
 
-FSQLiteTable USQLiteDatabase::CreateTable(const FString DatabaseName, const FString TableName,
+FSQLiteTable USQLiteDatabase::CreateTable(const FString& DatabaseName, const FString& TableName,
 	const TArray<FSQLiteTableField> Fields, const FSQLitePrimaryKey PK)
 {
 	FSQLiteTable t;
@@ -408,7 +408,7 @@ FSQLiteTable USQLiteDatabase::CreateTable(const FString DatabaseName, const FStr
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::DropTable(const FString DatabaseName, const FString TableName)
+bool USQLiteDatabase::DropTable(const FString& DatabaseName, const FString& TableName)
 {
 	bool idxCrSts = true;
 
@@ -425,7 +425,7 @@ bool USQLiteDatabase::DropTable(const FString DatabaseName, const FString TableN
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::TruncateTable(const FString DatabaseName, const FString TableName)
+bool USQLiteDatabase::TruncateTable(const FString& DatabaseName, const FString& TableName)
 {
 	bool idxCrSts = true;
 
@@ -442,7 +442,7 @@ bool USQLiteDatabase::TruncateTable(const FString DatabaseName, const FString Ta
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::Vacuum(const FString DatabaseName)
+bool USQLiteDatabase::Vacuum(const FString& DatabaseName)
 {
 	bool idxCrSts = true;
 
@@ -459,7 +459,7 @@ bool USQLiteDatabase::Vacuum(const FString DatabaseName)
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::ExecSql(const FString DatabaseName, const FString Query) {
+bool USQLiteDatabase::ExecSql(const FString& DatabaseName, const FString& Query) {
 	//LOGSQLITE(Warning, *query);
 
 	bool execStatus = false;
@@ -494,7 +494,7 @@ bool USQLiteDatabase::ExecSql(const FString DatabaseName, const FString Query) {
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::CreateIndexes(const FString DatabaseName, const FString TableName, const TArray<FSQLiteIndex> Indexes)
+bool USQLiteDatabase::CreateIndexes(const FString& DatabaseName, const FString& TableName, const TArray<FSQLiteIndex> Indexes)
 {
 	bool idxCrSts = true;
 
@@ -520,7 +520,7 @@ bool USQLiteDatabase::CreateIndexes(const FString DatabaseName, const FString Ta
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::CreateIndex(const FString DatabaseName, const FString TableName, const FSQLiteIndex Index)
+bool USQLiteDatabase::CreateIndex(const FString& DatabaseName, const FString& TableName, const FSQLiteIndex Index)
 {
 	bool idxCrSts = true;
 
@@ -536,7 +536,7 @@ bool USQLiteDatabase::CreateIndex(const FString DatabaseName, const FString Tabl
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::DropIndex(const FString DatabaseName, const FString IndexName)
+bool USQLiteDatabase::DropIndex(const FString& DatabaseName, const FString& IndexName)
 {
 	bool idxCrSts = true;
 
@@ -552,7 +552,7 @@ bool USQLiteDatabase::DropIndex(const FString DatabaseName, const FString IndexN
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::IsTableExists(const FString DatabaseName, const FString TableName)
+bool USQLiteDatabase::IsTableExists(const FString& DatabaseName, const FString& TableName)
 {
 
 	sqlite3* db;
@@ -562,7 +562,7 @@ bool USQLiteDatabase::IsTableExists(const FString DatabaseName, const FString Ta
 
 	FString Query = "SELECT * FROM sqlite_master WHERE type='table' AND name='" + TableName + "';";
 
-	PrepareStatement(&DatabaseName, &Query, &db, &sqlReturnCode1, &preparedStatement);
+	PrepareStatement(DatabaseName, Query, &db, &sqlReturnCode1, &preparedStatement);
 	sqlReturnCode = *sqlReturnCode1;
 
 	if (sqlReturnCode != SQLITE_OK)
@@ -596,7 +596,7 @@ bool USQLiteDatabase::IsTableExists(const FString DatabaseName, const FString Ta
 
 }
 
-void USQLiteDatabase::InsertRowsIntoTable(const FString DatabaseName, const FString TableName, TArray<FSQLiteTableRowSimulator> rowsOfFields){
+void USQLiteDatabase::InsertRowsIntoTable(const FString& DatabaseName, const FString& TableName, TArray<FSQLiteTableRowSimulator> rowsOfFields){
 	for (FSQLiteTableRowSimulator row : rowsOfFields) {
 		FString query = "INSERT INTO " + TableName + " (";
 		for (FSQLiteTableField field : row.rowsOfFields) {
@@ -627,7 +627,7 @@ void USQLiteDatabase::InsertRowsIntoTable(const FString DatabaseName, const FStr
 
 //--------------------------------------------------------------------------------------------------------------
 
-SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(FString DatabaseName, FString Query)
+SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(const FString& DatabaseName, const FString& Query)
 {
 	SQLiteQueryResult result;
 
@@ -636,7 +636,7 @@ SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(FString DatabaseName, F
 	int32* sqlReturnCode1 = &sqlReturnCode;
 	sqlite3_stmt* preparedStatement;
 
-	PrepareStatement(&DatabaseName, &Query, &db, &sqlReturnCode1, &preparedStatement);
+	PrepareStatement(DatabaseName, Query, &db, &sqlReturnCode1, &preparedStatement);
 	sqlReturnCode = *sqlReturnCode1;
 
 	if (sqlReturnCode != SQLITE_OK)
