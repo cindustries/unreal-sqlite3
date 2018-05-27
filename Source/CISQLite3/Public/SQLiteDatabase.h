@@ -124,6 +124,12 @@ class CISQLITE3_API USQLiteDatabase : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
+	/** Create a sqlite database file if it doesn't exist already. Does nothing if already exists.
+    *   Returns false if the file couldn't be created */
+	UFUNCTION(BlueprintCallable, Category = "SQLite")
+		static bool CreateDatabase(const FString& Filename, bool RelativeToGameContentDirectory);
+
+	/** Checks if the database is registered, ie. that it can be found in Databases. */
 
 	/** Add a database to the list of databases. It will be checked that it's valid (will try to open it) */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")

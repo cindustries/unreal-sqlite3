@@ -14,14 +14,25 @@ USQLiteDatabase::USQLiteDatabase(const FObjectInitializer& ObjectInitializer)
 
 //--------------------------------------------------------------------------------------------------------------
 
+bool USQLiteDatabase::CreateDatabase(const FString& Filename, bool RelativeToProjectContentDirectory)
+{
+	const FString actualFilename = RelativeToGameContentDirectory ? FPaths::GameContentDir() + Filename : Filename;
+
+    sqlite3* db;
+    if (sqlite3_open(TCHAR_TO_ANSI(*actualFilename), &db) == SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return true;
+    }
+
+	return false;
+}
+
+//--------------------------------------------------------------------------------------------------------------
+
 bool USQLiteDatabase::RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToGameContentDirectory)
 {
-	FString actualFilename = Filename;
-
-	if (RelativeToGameContentDirectory)
-	{
-		actualFilename = FPaths::GameContentDir() + Filename;
-	}
+	const FString actualFilename = RelativeToGameContentDirectory ? FPaths::GameContentDir() + Filename : Filename;
 
 	if (!IsValidDatabase(actualFilename, true))
 	{
