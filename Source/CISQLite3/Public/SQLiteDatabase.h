@@ -197,9 +197,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Execute SQL"))
 		static bool ExecSql(const FString& DatabaseName, const FString& Query);
 
+    /** Checks database validity (if the file exists and/or if it can be opened). */
+	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Is Valid Database"))
+        static bool IsValidDatabase(const FString& DatabaseFilename, bool TestByOpening);
 private:
-	/** Checks database validity (if the file exists and/or if it can be opened). */
-	static bool IsValidDatabase(const FString& DatabaseFilename, bool TestByOpening);
 	/** Tries to open a database. */
 	static bool CanOpenDatabase(const FString& DatabaseFilename);
 	/** Collects all properties from an UObject and maps them by the property name. */
