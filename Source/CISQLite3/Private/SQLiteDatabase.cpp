@@ -460,36 +460,27 @@ bool USQLiteDatabase::Vacuum(const FString& DatabaseName)
 //--------------------------------------------------------------------------------------------------------------
 
 bool USQLiteDatabase::ExecSql(const FString& DatabaseName, const FString& Query) {
-	//LOGSQLITE(Warning, *query);
-
-	bool execStatus = false;
+	LOGSQLITE(Verbose, *Query);
 
 	char *zErrMsg = 0;
-	sqlite3 *db;
-
-	ANSICHAR* dbNameAsUtf8 = TCHAR_TO_UTF8(*Databases[DatabaseName]);
-	int32 i = sqlite3_open(dbNameAsUtf8, &db);
-
-	if (i == SQLITE_OK){
-
-		int32 k = sqlite3_exec(db, TCHAR_TO_UTF8(*Query), NULL, 0, &zErrMsg);
-
-		if (i == SQLITE_OK){
-			execStatus = true;
+	sqlite3 *db = nullptr;
+    const FString* databaseName = Databases.Find(DatabaseName);
+    if (databaseName && sqlite3_open(TCHAR_TO_ANSI(**databaseName), &db) == SQLITE_OK) {
+        bool success = false;
+		if (sqlite3_exec(db, TCHAR_TO_UTF8(*Query), NULL, 0, &zErrMsg) == SQLITE_OK) {
+			success = true;
 		}
 		else {
-			LOGSQLITE(Warning, TEXT("CreateTable - Query Exec Failed.."));
+			LOGSQLITE(Warning, TEXT("Query Exec Failed."));
 		}
-
-
+        sqlite3_close(db);
+        return success;
 	}
 	else {
-		LOGSQLITE(Warning, TEXT("CreateTable - DB Open failed.."));
+		LOGSQLITE(Error, TEXT("DB Open failed."));
 	}
 
-	sqlite3_close(db);
-
-	return execStatus;
+	return false;
 }
 
 //--------------------------------------------------------------------------------------------------------------
