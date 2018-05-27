@@ -421,51 +421,21 @@ FSQLiteTable USQLiteDatabase::CreateTable(const FString& DatabaseName, const FSt
 
 bool USQLiteDatabase::DropTable(const FString& DatabaseName, const FString& TableName)
 {
-	bool idxCrSts = true;
-
-
-	FString query = "DROP TABLE " + TableName;
-
-	//LOGSQLITE(Warning, *query);
-
-	idxCrSts = ExecSql(DatabaseName, query);
-
-	return idxCrSts;
-
+	return ExecSql(DatabaseName, "DROP TABLE " + TableName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
 
 bool USQLiteDatabase::TruncateTable(const FString& DatabaseName, const FString& TableName)
 {
-	bool idxCrSts = true;
-
-
-	FString query = "DELETE FROM " + TableName + ";";
-
-	//LOGSQLITE(Warning, *query);
-
-	idxCrSts = ExecSql(DatabaseName, query);
-
-	return idxCrSts;
-
+	return ExecSql(DatabaseName, "DELETE FROM " + TableName + ";");
 }
 
 //--------------------------------------------------------------------------------------------------------------
 
 bool USQLiteDatabase::Vacuum(const FString& DatabaseName)
 {
-	bool idxCrSts = true;
-
-
-	FString query = "VACUUM; ";
-
-	//LOGSQLITE(Warning, *query);
-
-	idxCrSts = ExecSql(DatabaseName, query);
-
-	return idxCrSts;
-
+	return ExecSql(DatabaseName, "VACUUM; ");
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -524,32 +494,14 @@ bool USQLiteDatabase::CreateIndexes(const FString& DatabaseName, const FString& 
 
 bool USQLiteDatabase::CreateIndex(const FString& DatabaseName, const FString& TableName, const FSQLiteIndex Index)
 {
-	bool idxCrSts = true;
-
-	FString query = Index.ResultStr.Replace(TEXT("$$$TABLE_NAME$$$"), *TableName);
-
-	//LOGSQLITE(Warning, *query);
-
-	idxCrSts = ExecSql(DatabaseName, query);
-
-	return idxCrSts;
-
+	return ExecSql(DatabaseName, Index.ResultStr.Replace(TEXT("$$$TABLE_NAME$$$"), *TableName));
 }
 
 //--------------------------------------------------------------------------------------------------------------
 
 bool USQLiteDatabase::DropIndex(const FString& DatabaseName, const FString& IndexName)
 {
-	bool idxCrSts = true;
-
-	FString query = "DROP INDEX " + IndexName;
-
-	//LOGSQLITE(Warning, *query);
-
-	idxCrSts = ExecSql(DatabaseName, query);
-
-	return idxCrSts;
-
+	return ExecSql(DatabaseName, "DROP INDEX " + IndexName);
 }
 
 //--------------------------------------------------------------------------------------------------------------
