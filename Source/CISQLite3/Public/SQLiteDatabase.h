@@ -135,6 +135,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
 		static bool RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToGameContentDirectory, bool KeepOpen=false);
 
+	/** Remove a database from the list of databases. Closes the database in case KeepOpen flag was set during @ref RegisterDatabase */
+	UFUNCTION(BlueprintCallable, Category = "SQLite")
+		static void UnregisterDatabase(const FString& Name);
+
 	/** Checks if the database is registered, ie. that it can be found in Databases. */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
 		static bool IsDatabaseRegistered(const FString& DatabaseName);

@@ -67,6 +67,17 @@ bool USQLiteDatabase::RegisterDatabase(const FString& Name, const FString& Filen
 
 //--------------------------------------------------------------------------------------------------------------
 
+void USQLiteDatabase::UnregisterDatabase(const FString& Name) {
+    /* Remove in case KeepOpen flag was set to true */
+    if (SQLite3Databases.Contains(Name)) {
+        sqlite3_close(SQLite3Databases[Name]);
+        SQLite3Databases.Remove(Name);
+    }
+    Databases.Remove(Name);
+}
+
+//--------------------------------------------------------------------------------------------------------------
+
 bool USQLiteDatabase::GetDataIntoObject(const FString& DatabaseName, const FString& Query, UObject* ObjectToPopulate)
 {
 	//////////////////////////////////////////////////////////////////////////
