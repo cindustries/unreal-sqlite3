@@ -133,7 +133,7 @@ public:
 
 	/** Add a database to the list of databases. It will be checked that it's valid (will try to open it) */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
-		static bool RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToGameContentDirectory);
+		static bool RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToGameContentDirectory, bool KeepOpen=false);
 
 	/** Checks if the database is registered, ie. that it can be found in Databases. */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
@@ -211,12 +211,15 @@ private:
 	static SQLiteQueryResult RunQueryAndGetResults(const FString& DatabaseName, const FString& Query);
 	/** Assigns a result row's fields' values to an UObject, ie. assigns them to the properties that have the same name. */
 	static void AssignResultsToObjectProperties(const SQLiteResultValue& ResultValue, UObject* ObjectToPopulate);
-	static void PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
+    /** @brief Prepare given statement, returns whether to keep the database open */
+	static bool PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
 		sqlite3_stmt** PreparedStatement);
 
 
 private:
 	/** A list of the databases for convenience, easier to refer to them by name rather than a long filename. */
 	static TMap<FString, FString> Databases;
+
+    static TMap<FString, sqlite3*> SQLite3Databases;
 
 };

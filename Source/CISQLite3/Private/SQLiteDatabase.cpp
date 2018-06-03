@@ -4,6 +4,7 @@
 #define LOGSQLITE(verbosity, text) UE_LOG(LogDatabase, verbosity, TEXT("SQLite: %s"), text)
 
 TMap<FString, FString> USQLiteDatabase::Databases;
+TMap<FString, sqlite3*> USQLiteDatabase::SQLite3Databases;
 
 //--------------------------------------------------------------------------------------------------------------
 
@@ -30,7 +31,7 @@ bool USQLiteDatabase::CreateDatabase(const FString& Filename, bool RelativeToPro
 
 //--------------------------------------------------------------------------------------------------------------
 
-bool USQLiteDatabase::RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToProjectContentDirectory)
+bool USQLiteDatabase::RegisterDatabase(const FString& Name, const FString& Filename, bool RelativeToProjectContentDirectory, bool KeepOpen)
 {
 	const FString actualFilename = RelativeToProjectContentDirectory ? FPaths::ProjectContentDir() + Filename : Filename;
 
@@ -41,17 +42,25 @@ bool USQLiteDatabase::RegisterDatabase(const FString& Name, const FString& Filen
 		return false;
 	}
 
-	if (IsDatabaseRegistered(Name))
+	if (!IsDatabaseRegistered(Name))
 	{
+        Databases.Add(Name, actualFilename);
+        FString successMessage = "Registered SQLite database '" + actualFilename + "' successfully.";
+        LOGSQLITE(Verbose, *successMessage);
+    }
+    else {
 		FString message = "Database '" + actualFilename + "' is already registered, skipping.";
 		LOGSQLITE(Warning, *message);
-		return true;
-	}
+    }
 
-	Databases.Add(Name, actualFilename);
+    if (KeepOpen) {
+        sqlite3* db;
+        if (sqlite3_open(TCHAR_TO_ANSI(*actualFilename), &db) == SQLITE_OK)
+        {
+            SQLite3Databases.Add(Name, db);
+        }
+    }
 
-	FString successMessage = "Registered SQLite database '" + actualFilename + "' successfully.";
-	LOGSQLITE(Verbose, *successMessage);
 	return true;
 
 }
@@ -91,19 +100,19 @@ bool USQLiteDatabase::GetDataIntoObject(const FString& DatabaseName, const FStri
 	// Get the results
 	//////////////////////////////////////////////////////////////////////////
 
-	SQLiteQueryResult queryResult = RunQueryAndGetResults(DatabaseName, Query);
+	TUniquePtr<SQLiteQueryResult> queryResult = RunQueryAndGetResults(DatabaseName, Query);
 
-	if (queryResult.Success && queryResult.Results.Num() > 0)
+	if (queryResult->Success && queryResult->Results.Num() > 0)
 	{
-		AssignResultsToObjectProperties(queryResult.Results[0], ObjectToPopulate);
+		AssignResultsToObjectProperties(queryResult->Results[0], ObjectToPopulate);
 		return true;
 	}
-	else if (!queryResult.Success)
+	else if (!queryResult->Success)
 	{
-		LOGSQLITE(Error, *FString::Printf(TEXT("Query resulted in an error: '%s'"), *queryResult.ErrorMessage));
+		LOGSQLITE(Error, *FString::Printf(TEXT("Query resulted in an error: '%s'"), *queryResult->ErrorMessage));
 		return false;
 	}
-	else if (queryResult.Results.Num() == 0)
+	else if (queryResult->Results.Num() == 0)
 	{
 		LOGSQLITE(Error, TEXT("Query returned zero rows, no data to assign to object properties."));
 		return false;
@@ -157,19 +166,19 @@ bool USQLiteDatabase::GetDataIntoObjectBP(const FSQLiteDatabaseReference& DataSo
 
 	FString constructedQuery = ConstructQuery(DataSource.Tables, Fields, Query, 1, 0);
 
-	SQLiteQueryResult queryResult = RunQueryAndGetResults(DataSource.DatabaseName, constructedQuery);
+	TUniquePtr<SQLiteQueryResult> queryResult = RunQueryAndGetResults(DataSource.DatabaseName, constructedQuery);
 
-	if (queryResult.Success && queryResult.Results.Num() > 0)
+	if (queryResult->Success && queryResult->Results.Num() > 0)
 	{
-		AssignResultsToObjectProperties(queryResult.Results[0], ObjectToPopulate);
+		AssignResultsToObjectProperties(queryResult->Results[0], ObjectToPopulate);
 		return true;
 	}
-	else if (!queryResult.Success)
+	else if (!queryResult->Success)
 	{
-		LOGSQLITE(Error, *FString::Printf(TEXT("Query resulted in an error: '%s'"), *queryResult.ErrorMessage));
+		LOGSQLITE(Error, *FString::Printf(TEXT("Query resulted in an error: '%s'"), *queryResult->ErrorMessage));
 		return false;
 	}
-	else if (queryResult.Results.Num() == 0)
+	else if (queryResult->Results.Num() == 0)
 	{
 		LOGSQLITE(Error, TEXT("Query returned zero rows, no data to assign to object properties."));
 		return false;
@@ -257,11 +266,11 @@ FSQLiteQueryResult USQLiteDatabase::GetData(const FString& DatabaseName, const F
 	// Get the results
 	//////////////////////////////////////////////////////////////////////////
 
-	SQLiteQueryResult queryResult = RunQueryAndGetResults(DatabaseName, Query);
-	result.Success = queryResult.Success;
-	result.ErrorMessage = queryResult.ErrorMessage;
+	TUniquePtr<SQLiteQueryResult> queryResult = RunQueryAndGetResults(DatabaseName, Query);
+	result.Success = queryResult->Success;
+	result.ErrorMessage = queryResult->ErrorMessage;
 
-	for (auto row : queryResult.Results)
+	for (auto row : queryResult->Results)
 	{
 		FSQLiteQueryResultRow outRow;
 		for (auto field : row.Fields)
@@ -351,14 +360,18 @@ FString USQLiteDatabase::ConstructQuery(TArray<FString> Tables, TArray<FString> 
 
 //--------------------------------------------------------------------------------------------------------------
 
-void USQLiteDatabase::PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
+bool USQLiteDatabase::PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
 	sqlite3_stmt** PreparedStatement) {
 
-	int32 i = sqlite3_open(TCHAR_TO_UTF8(*Databases[*DatabaseName]), Db);
-
-	**SqlReturnCode = i;
+    const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
+    if (keepOpen) {
+        *Db = SQLite3Databases[DatabaseName];
+    } else {
+        sqlite3_open(TCHAR_TO_UTF8(*Databases[*DatabaseName]), Db);
+    }
 
 	**SqlReturnCode = sqlite3_prepare_v2(*Db, TCHAR_TO_UTF8(*Query), -1, PreparedStatement, NULL);
+    return keepOpen;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -446,22 +459,33 @@ bool USQLiteDatabase::ExecSql(const FString& DatabaseName, const FString& Query)
 	char *zErrMsg = 0;
 	sqlite3 *db = nullptr;
     const FString* databaseName = Databases.Find(DatabaseName);
-    if (databaseName && sqlite3_open(TCHAR_TO_ANSI(**databaseName), &db) == SQLITE_OK) {
-        bool success = false;
-		if (sqlite3_exec(db, TCHAR_TO_UTF8(*Query), NULL, 0, &zErrMsg) == SQLITE_OK) {
-			success = true;
-		}
-		else {
-			LOGSQLITE(Warning, TEXT("Query Exec Failed."));
-		}
-        sqlite3_close(db);
-        return success;
-	}
-	else {
-		LOGSQLITE(Error, TEXT("DB Open failed."));
-	}
+    if (!databaseName) {
+        LOGSQLITE(Error, TEXT("DB not registered."));
+        return false;
+    }
 
-	return false;
+    const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
+    if (keepOpen) {
+        db = SQLite3Databases[DatabaseName];
+    }
+    else {
+        if (sqlite3_open(TCHAR_TO_ANSI(**databaseName), &db) != SQLITE_OK) {
+            LOGSQLITE(Error, TEXT("DB open failed."));
+            return false;
+        }
+    }
+
+    bool success = false;
+    if (sqlite3_exec(db, TCHAR_TO_UTF8(*Query), NULL, 0, &zErrMsg) == SQLITE_OK) {
+        success = true;
+    }
+    else {
+        LOGSQLITE(Warning, TEXT("Query Exec Failed."));
+    }
+
+    if (!keepOpen) sqlite3_close(db);
+
+    return success;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -516,7 +540,7 @@ bool USQLiteDatabase::IsTableExists(const FString& DatabaseName, const FString& 
 
 	FString Query = "SELECT * FROM sqlite_master WHERE type='table' AND name='" + TableName + "';";
 
-	PrepareStatement(DatabaseName, Query, &db, &sqlReturnCode1, &preparedStatement);
+	const bool keepOpen = PrepareStatement(DatabaseName, Query, &db, &sqlReturnCode1, &preparedStatement);
 	sqlReturnCode = *sqlReturnCode1;
 
 	if (sqlReturnCode != SQLITE_OK)
@@ -526,7 +550,7 @@ bool USQLiteDatabase::IsTableExists(const FString& DatabaseName, const FString& 
 		LOGSQLITE(Error, *error);
 		LOGSQLITE(Error, *FString::Printf(TEXT("The attempted query was: %s"), *Query));
 		sqlite3_finalize(preparedStatement);
-		sqlite3_close(db);
+        if (!keepOpen) sqlite3_close(db);
 	}
 
 	bool tableExists = false;
@@ -544,7 +568,7 @@ bool USQLiteDatabase::IsTableExists(const FString& DatabaseName, const FString& 
 	//////////////////////////////////////////////////////////////////////////
 
 	sqlite3_finalize(preparedStatement);
-	sqlite3_close(db);
+    if (!keepOpen) sqlite3_close(db);
 
 	return tableExists;
 
@@ -581,8 +605,10 @@ void USQLiteDatabase::InsertRowsIntoTable(const FString& DatabaseName, const FSt
 
 //--------------------------------------------------------------------------------------------------------------
 
-SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(const FString& DatabaseName, const FString& Query)
+TUniquePtr<SQLiteQueryResult> USQLiteDatabase::RunQueryAndGetResults(const FString& DatabaseName, const FString& Query)
 {
+	LOGSQLITE(Verbose, *Query);
+
 	SQLiteQueryResult result;
 
 	sqlite3* db;
@@ -590,7 +616,7 @@ SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(const FString& Database
 	int32* sqlReturnCode1 = &sqlReturnCode;
 	sqlite3_stmt* preparedStatement;
 
-	PrepareStatement(DatabaseName, Query, &db, &sqlReturnCode1, &preparedStatement);
+	const bool keepOpen = PrepareStatement(DatabaseName, Query, &db, &sqlReturnCode1, &preparedStatement);
 	sqlReturnCode = *sqlReturnCode1;
 
 	if (sqlReturnCode != SQLITE_OK)
@@ -602,8 +628,8 @@ SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(const FString& Database
 		result.ErrorMessage = error;
 		result.Success = false;
 		sqlite3_finalize(preparedStatement);
-		sqlite3_close(db);
-		return result;
+        if (!keepOpen) sqlite3_close(db);
+		return MakeUnique<SQLiteQueryResult>(MoveTemp(result));
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -660,11 +686,11 @@ SQLiteQueryResult USQLiteDatabase::RunQueryAndGetResults(const FString& Database
 	//////////////////////////////////////////////////////////////////////////
 
 	sqlite3_finalize(preparedStatement);
-	sqlite3_close(db);
+	if (!keepOpen) sqlite3_close(db);
 
 	result.Results = resultRows;
 	result.Success = true;
-	return result;
+    return MakeUnique<SQLiteQueryResult>(MoveTemp(result));
 
 }
 
