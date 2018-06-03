@@ -200,6 +200,9 @@ public:
     /** Checks database validity (if the file exists and/or if it can be opened). */
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Is Valid Database"))
         static bool IsValidDatabase(const FString& DatabaseFilename, bool TestByOpening);
+
+	/** Runs a query and returns fetched rows. */
+        static TUniquePtr<SQLiteQueryResult> RunQueryAndGetResults(const FString& DatabaseName, const FString& Query);
 private:
 	/** Tries to open a database. */
 	static bool CanOpenDatabase(const FString& DatabaseFilename);
@@ -207,8 +210,6 @@ private:
 	static TMap<FString, UProperty*> CollectProperties(UObject* SourceObject);
 	/** Constructs an SQL query from the blueprint fed data. */
 	static FString ConstructQuery(TArray<FString> Tables, TArray<FString> Fields, FSQLiteQueryFinalizedQuery QueryObject, int32 MaxResults = -1, int32 ResultOffset = 0);
-	/** Runs a query and returns fetched rows. */
-	static SQLiteQueryResult RunQueryAndGetResults(const FString& DatabaseName, const FString& Query);
 	/** Assigns a result row's fields' values to an UObject, ie. assigns them to the properties that have the same name. */
 	static void AssignResultsToObjectProperties(const SQLiteResultValue& ResultValue, UObject* ObjectToPopulate);
     /** @brief Prepare given statement, returns whether to keep the database open */
