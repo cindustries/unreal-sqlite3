@@ -8,11 +8,19 @@ Please report any problems to the [issues tracker](https://github.com/cindustrie
 
 SQLite3UE4 integrates sqlite3 as a ThirdParty module, which leads to a chain of complexity and also requires people to build the sqlite3 library before using it. On CISQLite3, we integrated the sqlite3 code directly into the module, and so it gets linked like the rest of the module on compile.
 
-# Tested on ...
+# Works On
 
-**WARNING** The test is so far just compile test (this is all new, updates following regulary)
+Compiled and basic functionality:
 
-Windows x64 **WORKS**, Android **WORKS**
+OS | Tested
+---|-------
+Windows x64 | ✓
+Android | ✓
+
+UE4 Version | Tested
+---|-------
+4.20.x | ✓
+4.19.x | ✓
 
 # Installation
 
