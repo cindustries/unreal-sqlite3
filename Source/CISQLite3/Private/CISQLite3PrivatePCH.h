@@ -8,4 +8,4 @@
 #include "SQLiteBlueprintFunctionLibrary.h"
 #include "SQLiteBlueprintNodes.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogDatabase, All, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogDatabase, Log, All);
