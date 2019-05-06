@@ -20,10 +20,14 @@ bool USQLiteDatabase::CreateDatabase(const FString& Filename, bool RelativeToPro
 	const FString actualFilename = RelativeToProjectContentDirectory ? FPaths::ProjectContentDir() + Filename : Filename;
 
     sqlite3* db;
-    if (sqlite3_open(TCHAR_TO_ANSI(*actualFilename), &db) == SQLITE_OK)
+    int res = sqlite3_open(TCHAR_TO_ANSI(*actualFilename), &db);
+    if (res == SQLITE_OK)
     {
         sqlite3_close(db);
         return true;
+    }
+    else {
+		LOGSQLITE(Error, *FString::Printf(TEXT("Could not create database, error code: %d"), res));
     }
 
 	return false;
