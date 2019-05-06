@@ -629,6 +629,11 @@ void USQLiteDatabase::InsertRowsIntoTable(const FString& DatabaseName, const FSt
 TUniquePtr<SQLiteQueryResult> USQLiteDatabase::RunQueryAndGetResults(const FString& DatabaseName, const FString& Query)
 {
 	LOGSQLITE(Verbose, *Query);
+    const FString* databaseName = Databases.Find(DatabaseName);
+    if (!databaseName) {
+        LOGSQLITE(Error, TEXT("DB not registered."));
+        return nullptr;
+    }
 
 	SQLiteQueryResult result;
 
