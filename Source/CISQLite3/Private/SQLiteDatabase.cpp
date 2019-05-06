@@ -378,11 +378,17 @@ FString USQLiteDatabase::ConstructQuery(TArray<FString> Tables, TArray<FString> 
 bool USQLiteDatabase::PrepareStatement(const FString& DatabaseName, const FString& Query, sqlite3** Db, int32** SqlReturnCode,
 	sqlite3_stmt** PreparedStatement) {
 
+    const FString* databaseName = Databases.Find(DatabaseName);
+    if (!databaseName) {
+        LOGSQLITE(Error, TEXT("DB not registered."));
+        return false;
+    }
+
     const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
     if (keepOpen) {
         *Db = SQLite3Databases[DatabaseName];
     } else {
-        sqlite3_open(TCHAR_TO_UTF8(*Databases[*DatabaseName]), Db);
+        sqlite3_open(TCHAR_TO_ANSI(**databaseName), Db);
     }
 
 	**SqlReturnCode = sqlite3_prepare_v2(*Db, TCHAR_TO_UTF8(*Query), -1, PreparedStatement, NULL);
