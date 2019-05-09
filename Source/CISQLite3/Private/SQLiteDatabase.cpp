@@ -81,6 +81,74 @@ void USQLiteDatabase::UnregisterDatabase(const FString& Name) {
 }
 
 //--------------------------------------------------------------------------------------------------------------
+TArray<uint8> USQLiteDatabase::Serialize(const FString& DatabaseName) {
+    sqlite3* Db;
+    const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
+    if (keepOpen) {
+        Db = SQLite3Databases[DatabaseName];
+    } else {
+        const FString* databaseName = Databases.Find(DatabaseName);
+        if (!databaseName) {
+            LOGSQLITE(Error, TEXT("DB not registered."));
+            return {};
+        }
+
+        const int err = sqlite3_open(TCHAR_TO_ANSI(**databaseName), &Db);
+        if (err != SQLITE_OK) {
+            const char* msg = sqlite3_errmsg(Db);
+            if(msg) {
+                UE_LOG(LogDatabase, Error, TEXT("Error ocurred during serialization, code: '%s' (%i), message: '%s'"), sqlite3_errstr(err), err, sqlite3_errmsg(Db));
+            } else {
+                UE_LOG(LogDatabase, Error, TEXT("Error ocurred during serialization, code: %s"), sqlite3_errstr(err));
+            }
+            return {};
+        }
+    }
+
+    int64 size;
+    uint8* ptr = sqlite3_serialize(Db, "main", &size, 0);
+    const int err = sqlite3_errcode(Db);
+    if (err != SQLITE_OK) {
+        const char* msg = sqlite3_errmsg(Db);
+        if(msg) {
+            UE_LOG(LogDatabase, Error, TEXT("Error ocurred during serialization, code: '%s' (%i), message: '%s'"), sqlite3_errstr(err), err, sqlite3_errmsg(Db));
+        } else {
+            UE_LOG(LogDatabase, Error, TEXT("Error ocurred during serialization, code: %s"), sqlite3_errstr(err));
+        }
+        return {};
+    }
+    return TArray<uint8>(ptr, size);
+}
+
+bool USQLiteDatabase::Deserialize(const FString& DatabaseName, const TArray<uint8>& data) {
+    sqlite3* Db;
+    const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
+    if (keepOpen) {
+        Db = SQLite3Databases[DatabaseName];
+    } else {
+        const FString* databaseName = Databases.Find(DatabaseName);
+        if (!databaseName) {
+            LOGSQLITE(Error, TEXT("DB not registered."));
+            return false;
+        }
+
+        sqlite3_open(TCHAR_TO_ANSI(**databaseName), &Db);
+    }
+
+    const int err = sqlite3_deserialize(Db, "main", 
+        const_cast<unsigned char*>(data.GetData()), data.Num(), data.Num(), SQLITE_DESERIALIZE_READONLY);
+    if (err != SQLITE_OK) {
+        const char* msg = sqlite3_errmsg(Db);
+        if(msg) {
+            UE_LOG(LogDatabase, Error, TEXT("Error ocurred during serialization, code: '%s' (%i), message: '%s'"), sqlite3_errstr(err), err, sqlite3_errmsg(Db));
+        } else {
+            UE_LOG(LogDatabase, Error, TEXT("Error ocurred during serialization, code: %s"), sqlite3_errstr(err));
+        }
+        return false;
+    }
+    return true;
+}
+//--------------------------------------------------------------------------------------------------------------
 
 bool USQLiteDatabase::GetDataIntoObject(const FString& DatabaseName, const FString& Query, UObject* ObjectToPopulate)
 {

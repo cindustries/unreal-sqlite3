@@ -21,6 +21,8 @@ public class CISQLite3 : ModuleRules
       }
     );
 
+    PrivateDefinitions.Add("SQLITE_ENABLE_DESERIALIZE=1");
+
     PrivateDependencyModuleNames.AddRange(
       new string[] {}
     );

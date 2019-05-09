@@ -205,6 +205,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SQLite|Query", meta = (DisplayName = "Is Valid Database"))
         static bool IsValidDatabase(const FString& DatabaseFilename, bool TestByOpening);
 
+    static TArray<uint8> Serialize(const FString& DatabaseFilename);
+    static bool Deserialize(const FString& DatabaseFilename, const TArray<uint8>& data);
+
 	/** Runs a query and returns fetched rows. */
         static TUniquePtr<SQLiteQueryResult> RunQueryAndGetResults(const FString& DatabaseName, const FString& Query);
 private:
