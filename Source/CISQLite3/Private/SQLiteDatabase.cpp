@@ -81,7 +81,7 @@ void USQLiteDatabase::UnregisterDatabase(const FString& Name) {
 }
 
 //--------------------------------------------------------------------------------------------------------------
-TArray<uint8> USQLiteDatabase::Serialize(const FString& DatabaseName) {
+TArray<uint8> USQLiteDatabase::Dump(const FString& DatabaseName) {
     sqlite3* Db;
     const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
     if (keepOpen) {
@@ -120,7 +120,7 @@ TArray<uint8> USQLiteDatabase::Serialize(const FString& DatabaseName) {
     return TArray<uint8>(ptr, size);
 }
 
-bool USQLiteDatabase::Deserialize(const FString& DatabaseName, const TArray<uint8>& data) {
+bool USQLiteDatabase::Restore(const FString& DatabaseName, const TArray<uint8>& data) {
     sqlite3* Db;
     const bool keepOpen = SQLite3Databases.Contains(DatabaseName);
     if (keepOpen) {
@@ -545,7 +545,6 @@ bool USQLiteDatabase::Vacuum(const FString& DatabaseName)
 bool USQLiteDatabase::ExecSql(const FString& DatabaseName, const FString& Query) {
 	LOGSQLITE(Verbose, *Query);
 
-	char *zErrMsg = 0;
 	sqlite3 *db = nullptr;
     const FString* databaseName = Databases.Find(DatabaseName);
     if (!databaseName) {
@@ -565,11 +564,12 @@ bool USQLiteDatabase::ExecSql(const FString& DatabaseName, const FString& Query)
     }
 
     bool success = false;
+    char *zErrMsg = nullptr;
     if (sqlite3_exec(db, TCHAR_TO_UTF8(*Query), NULL, 0, &zErrMsg) == SQLITE_OK) {
         success = true;
-    }
-    else {
-        LOGSQLITE(Warning, TEXT("Query Exec Failed."));
+    } else {
+        UE_LOG(LogDatabase, Error, TEXT("SQLite: Query Exec Failed: %s"), UTF8_TO_TCHAR(zErrMsg));
+        sqlite3_free(zErrMsg);
     }
 
     if (!keepOpen) sqlite3_close(db);
