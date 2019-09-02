@@ -99,6 +99,9 @@ Copyright (c) 2015 Jussi Saarivirta & KhArtNJava (SQLite3UE4)
 
 Copyright (c) 2016 conflict.industries
 
+Copyright (c) 2019 Jonathan Hale (Vhite Rabbit GbR)
+Copyright (c) 2019 Rehub GmbH
+
 ## SQLite3
 
 The author disclaims copyright to this source code. In place of a legal notice, here is a blessing:
