@@ -173,7 +173,7 @@ FSQLitePrimaryKey USQLiteBlueprintFunctionLibrary::SQLitePrimaryKey(const TArray
 }
 
 FSQLiteIndex USQLiteBlueprintFunctionLibrary::SQLiteIndexFunction(const TArray<FSQLiteTableField> Fields, FString idxName, bool Unique) {
-	
+
 	FSQLiteIndex i;
 	i.IndexName = idxName;
 

@@ -47,7 +47,7 @@ struct CISQLITE3_API FSQLiteTableField
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Table Field")
 		FString FieldValue = "";
 
-}; 
+};
 
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteTableRowSimulator

@@ -8,15 +8,25 @@ Please report any problems to the [issues tracker](https://github.com/cindustrie
 
 SQLite3UE4 integrates sqlite3 as a ThirdParty module, which leads to a chain of complexity and also requires people to build the sqlite3 library before using it. On CISQLite3, we integrated the sqlite3 code directly into the module, and so it gets linked like the rest of the module on compile.
 
-# Tested on ...
+# Works On
 
-**WARNING** The test is so far just compile test (this is all new, updates following regulary)
+Compiled and basic functionality:
 
-Windows x64 **WORKS**, Android **WORKS**
+OS | Tested
+---|-------
+Windows x64 | ✓
+Android | ✓
+
+UE4 Version | Tested
+---|-------
+4.22.x | ✓
+4.21.x | ✓
+4.20.x | ✓
+4.19.x | ✓
 
 # Installation
 
-Copy this plugin (like Download as ZIP) into the folder **Plugins/CISQLite3** on your project and a start of the project should compile the plugin automatically, if the project is C++. If you don't have a C++ project, then you can just make one for the sole purpose of compiling this plugin. Alternative you can install it as Engine Plugin in the Engine Plugins directory (like **Epic Games/4.12/Engine/Plugins/Runtime/CISQLite3**).
+Copy this plugin (like Download as ZIP) into the folder **Plugins/CISQLite3** on your project and a start of the project should compile the plugin automatically, if the project is C++. If you don't have a C++ project, then you can just make one for the sole purpose of compiling this plugin. Alternative you can install it as Engine Plugin in the Engine Plugins directory (like **Epic Games/4.22/Engine/Plugins/Runtime/CISQLite3**).
 
 # Usage
 
@@ -88,6 +98,9 @@ The MIT License (MIT)
 Copyright (c) 2015 Jussi Saarivirta & KhArtNJava (SQLite3UE4)
 
 Copyright (c) 2016 conflict.industries
+
+Copyright (c) 2019 Jonathan Hale (Vhite Rabbit GbR)
+Copyright (c) 2019 Rehub GmbH
 
 ## SQLite3
 
