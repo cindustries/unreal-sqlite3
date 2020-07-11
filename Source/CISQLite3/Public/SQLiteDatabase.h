@@ -214,7 +214,7 @@ private:
 	/** Tries to open a database. */
 	static bool CanOpenDatabase(const FString& DatabaseFilename);
 	/** Collects all properties from an UObject and maps them by the property name. */
-	static TMap<FString, UProperty*> CollectProperties(UObject* SourceObject);
+	static TMap<FString, FProperty*> CollectProperties(UObject* SourceObject);
 	/** Constructs an SQL query from the blueprint fed data. */
 	static FString ConstructQuery(TArray<FString> Tables, TArray<FString> Fields, FSQLiteQueryFinalizedQuery QueryObject, int32 MaxResults = -1, int32 ResultOffset = 0);
 	/** Assigns a result row's fields' values to an UObject, ie. assigns them to the properties that have the same name. */
