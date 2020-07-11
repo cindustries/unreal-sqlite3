@@ -17,7 +17,7 @@ USQLiteDatabase::USQLiteDatabase(const FObjectInitializer& ObjectInitializer)
 
 bool USQLiteDatabase::CreateDatabase(const FString& Filename, bool RelativeToProjectContentDirectory)
 {
-	const FString actualFilename = RelativeToProjectContentDirectory ? FPaths::ProjectContentDir() + Filename : Filename;
+	const FString actualFilename = RelativeToProjectContentDirectory ? FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) + Filename : Filename;
 
     sqlite3* db;
     int res = sqlite3_open(TCHAR_TO_ANSI(*actualFilename), &db);
