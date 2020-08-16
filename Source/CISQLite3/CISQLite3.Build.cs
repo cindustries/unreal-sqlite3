@@ -13,7 +13,7 @@ public class CISQLite3 : ModuleRules
 
     PrivatePCHHeaderFile = "Private/CISQLite3PrivatePCH.h";
 
-        PublicDependencyModuleNames.AddRange(
+    PublicDependencyModuleNames.AddRange(
       new string[] {
         "Engine",
         "Core",

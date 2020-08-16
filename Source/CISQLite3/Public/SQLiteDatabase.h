@@ -111,6 +111,7 @@ struct SQLiteQueryResult
 	bool Success;
 	FString ErrorMessage;
 	TArray<SQLiteResultValue> Results;
+	int InsertedId = 0;
 };
 
 
