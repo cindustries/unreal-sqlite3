@@ -1,5 +1,6 @@
 // Copyright (c) 2016 conflict.industries MIT License (MIT)
 
+#include "CISQLite3.h"
 #include "CISQLite3PrivatePCH.h"
 
 DEFINE_LOG_CATEGORY(LogDatabase)

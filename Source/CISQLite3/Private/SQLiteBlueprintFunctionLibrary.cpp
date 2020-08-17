@@ -1,17 +1,12 @@
+#include "SQLiteBlueprintFunctionLibrary.h"
 #include "CISQLite3PrivatePCH.h"
 #include "Engine.h"
-#include "CString.h"
-
-#include "SQLiteBlueprintFunctionLibrary.h"
-
-
-
+#include "Misc/CString.h"
 
 int32 USQLiteBlueprintFunctionLibrary::CastToInt(FString SQLiteResultValue)
 {
 	return FCString::Atoi(*SQLiteResultValue);
 }
-
 
 bool USQLiteBlueprintFunctionLibrary::CastToBoolean(FString SQLiteResultValue)
 {
@@ -173,7 +168,7 @@ FSQLitePrimaryKey USQLiteBlueprintFunctionLibrary::SQLitePrimaryKey(const TArray
 }
 
 FSQLiteIndex USQLiteBlueprintFunctionLibrary::SQLiteIndexFunction(const TArray<FSQLiteTableField> Fields, FString idxName, bool Unique) {
-	
+
 	FSQLiteIndex i;
 	i.IndexName = idxName;
 

@@ -1,23 +1,17 @@
 // Copyright (c) 2015 Jussi Saarivirta 2016 conflict.industries MIT License (MIT)
 
 using UnrealBuildTool;
+using System.IO;
 
 public class CISQLite3 : ModuleRules
 {
-  public CISQLite3(TargetInfo Target)
+  public CISQLite3(ReadOnlyTargetRules Target) : base(Target)
   {
-    
-    PublicIncludePaths.AddRange(
-      new string[] {
-        "CISQLite3/Public"
-      }
-    );
 
-    PrivateIncludePaths.AddRange(
-      new string[] {
-        "CISQLite3/Private"
-      }
-    );
+    PublicIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "Public") });
+    PrivateIncludePaths.AddRange(new string[] {  Path.Combine(ModuleDirectory, "Private") });
+
+    PrivatePCHHeaderFile = "Private/CISQLite3PrivatePCH.h";
 
     PublicDependencyModuleNames.AddRange(
       new string[] {
@@ -26,6 +20,8 @@ public class CISQLite3 : ModuleRules
         "CoreUObject"
       }
     );
+
+    PrivateDefinitions.Add("SQLITE_ENABLE_DESERIALIZE=1");
 
     PrivateDependencyModuleNames.AddRange(
       new string[] {}
