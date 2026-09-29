@@ -1,0 +1,6 @@
+# >>> skilletor >>>
+agents/**/.local.*
+rules/**/.local.*
+skilletor.local.json
+skilletor.lock.json
+# <<< skilletor <<<

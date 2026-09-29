@@ -1,0 +1,8 @@
+{
+  "install": {
+    "skills": [
+      "getty-git-commit-style@getty",
+      "getty-git-usage@getty"
+    ]
+  }
+}
