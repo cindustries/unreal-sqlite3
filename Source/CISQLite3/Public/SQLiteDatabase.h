@@ -1,13 +1,17 @@
 #pragma once
+#include "CoreMinimal.h"
+#include "UObject/Object.h"
 #include "sqlite3.h"
 #include "SQLiteBlueprintNodes.h"
 #include "SQLiteDatabaseStructs.h"
 #include "SQLiteDatabase.generated.h"
 
+class FProperty;
+
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteDatabaseReference
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** The database name (not the filename) */
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Database Reference")
@@ -21,7 +25,7 @@ struct CISQLITE3_API FSQLiteDatabaseReference
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteKeyValuePair
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** The database table field name */
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Key Value Pair")
@@ -35,7 +39,7 @@ struct CISQLITE3_API FSQLiteKeyValuePair
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteQueryResultRow
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** A list of field name, field value pairs */
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Query Result")
@@ -45,7 +49,7 @@ struct CISQLITE3_API FSQLiteQueryResultRow
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteQueryResult
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** The resulting rows from the query */
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Query Result")
@@ -121,9 +125,11 @@ struct SQLiteQueryResult
 UCLASS()
 class CISQLITE3_API USQLiteDatabase : public UObject
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+
+	USQLiteDatabase(const FObjectInitializer& ObjectInitializer);
 
 	/** Add a database to the list of databases. It will be checked that it's valid (will try to open it) */
 	UFUNCTION(BlueprintCallable, Category = "SQLite")
@@ -197,7 +203,7 @@ private:
 	/** Tries to open a database. */
 	static bool CanOpenDatabase(FString DatabaseFilename);
 	/** Collects all properties from an UObject and maps them by the property name. */
-	static TMap<FString, UProperty*> CollectProperties(UObject* SourceObject);
+	static TMap<FString, FProperty*> CollectProperties(UObject* SourceObject);
 	/** Constructs an SQL query from the blueprint fed data. */
 	static FString ConstructQuery(TArray<FString> Tables, TArray<FString> Fields, FSQLiteQueryFinalizedQuery QueryObject, int32 MaxResults = -1, int32 ResultOffset = 0);
 	/** Runs a query and returns fetched rows. */

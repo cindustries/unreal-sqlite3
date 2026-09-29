@@ -2,6 +2,7 @@
   "FileVersion": 3,
   "Version": 1,
   "VersionName": "1.0",
+  "EngineVersion": "5.4.0",
   "FriendlyName": "SQLite3 Plugin",
   "Description": "SQLite3 plugin with Blueprint nodes and C++ functions (based on github.com/KhArtNJava/SQLite3UE4)",
   "Category": "Database",

@@ -2,7 +2,10 @@
 
 #pragma once
 
-#include "ModuleManager.h"
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogDatabase, All, All);
 
 class FCISQLite3 : public IModuleInterface
 {

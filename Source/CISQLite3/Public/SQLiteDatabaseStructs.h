@@ -1,10 +1,11 @@
 #pragma once
+#include "CoreMinimal.h"
 #include "SQLiteDatabaseStructs.generated.h"
 
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteIndex
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** String with piece if SQL script*/
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Index")
@@ -19,7 +20,7 @@ struct CISQLITE3_API FSQLiteIndex
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLitePrimaryKey
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** String with piece if SQL script*/
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Primary Key")
@@ -29,7 +30,7 @@ struct CISQLITE3_API FSQLitePrimaryKey
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteTableField
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** String with piece if SQL script*/
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Table Field")
@@ -52,7 +53,7 @@ struct CISQLITE3_API FSQLiteTableField
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteTableRowSimulator
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** Index name*/
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Index")
@@ -63,7 +64,7 @@ struct CISQLITE3_API FSQLiteTableRowSimulator
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteTable
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 		/** Database name*/
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Table")

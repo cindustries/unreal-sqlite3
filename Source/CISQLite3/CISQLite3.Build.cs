@@ -4,9 +4,11 @@ using UnrealBuildTool;
 
 public class CISQLite3 : ModuleRules
 {
-  public CISQLite3(TargetInfo Target)
+  public CISQLite3(ReadOnlyTargetRules Target) : base(Target)
   {
-    
+    PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+    DefaultBuildSettings = BuildSettingsVersion.V5;
+
     PublicIncludePaths.AddRange(
       new string[] {
         "CISQLite3/Public"

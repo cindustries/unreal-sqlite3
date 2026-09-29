@@ -1,12 +1,13 @@
 
 #pragma once
+#include "CoreMinimal.h"
 #include "SQLiteBlueprintNodes.generated.h"
 
 
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteQueryLogicExpectedNode
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Database Query")
 	FString Query;
@@ -21,7 +22,7 @@ struct CISQLITE3_API FSQLiteQueryLogicExpectedNode
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteQueryTermExpectedNode
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Database Query")
 	FString Query;
@@ -36,7 +37,7 @@ struct CISQLITE3_API FSQLiteQueryTermExpectedNode
 USTRUCT(BlueprintType)
 struct CISQLITE3_API FSQLiteQueryFinalizedQuery
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SQLite Database Query")
 	FString Query;
