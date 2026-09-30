@@ -1,5 +1,6 @@
 {
   "enabledPlugins": {
-    "briefing@getty": true
+    "briefing@getty": true,
+    "ruler@getty": true
   }
 }
